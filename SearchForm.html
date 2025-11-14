@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Пошук предмета</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #f0f7ff, #d0eaff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+      width: 350px;
+    }
+    h2 {
+      text-align: center;
+      color: #004c91;
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: 600;
+      color: #333;
+    }
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #aaa;
+      border-radius: 8px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    input[type="submit"] {
+      width: 100%;
+      background: #0078ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    input[type="submit"]:hover {
+      background: #005fcc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+  <h2>Пошук предмета</h2>
+  <form id="searchForm">
+    <label>ID предмета:</label>
+    <input type="number" name="id" required>
+
+    <label>Показати фото?</label>
+    <select name="has_photo">
+      <option value="true">Так</option>
+      <option value="false">Ні</option>
+    </select>
+
+    <input type="submit" value="Пошук">
+  </form>
+  <div id="result" style="margin-top:20px;"></div>
+</div>
+
+<script>
+    const form = document.getElementById("searchForm");
+    form.addEventListener("submit", async e => {
+    e.preventDefault();
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+
+        const response = await fetch("/search", { method: "POST", body: params });
+        const resultDiv = document.getElementById("result");
+        if (!response.ok) {
+            resultDiv.innerHTML = "<p>Не знайдено</p>";
+            return;
+        }
+
+        const data = await response.json();
+        let html = `<h3>${data.name}</h3><p>${data.description}</p>`;
+        if (data.photo) html += `<img src="${data.photo}" style="max-width:100%; margin-top:10px;">`;
+        resultDiv.innerHTML = html;
+    });
+</script>
+
+</body>
+</html>

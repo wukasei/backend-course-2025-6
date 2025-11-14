@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Реєстрація предмета</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #f0f7ff, #cde5ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+      width: 350px;
+    }
+    h2 {
+      text-align: center;
+      color: #004c91;
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: 600;
+      color: #333;
+    }
+    input[type="text"],
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #aaa;
+      border-radius: 8px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    textarea {
+      resize: vertical;
+    }
+    input[type="submit"] {
+      width: 100%;
+      background: #0078ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    input[type="submit"]:hover {
+      background: #005fcc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Додати предмет</h2>
+    <form action="/register" method="post" enctype="multipart/form-data">
+      <label>Назва предмета:</label>
+      <input type="text" name="inventory_name" required>
+
+      <label>Опис:</label>
+      <textarea name="description" rows="3"></textarea>
+
+      <label>Фото (необов’язково):</label>
+      <input type="file" name="photo" accept="image/*">
+
+      <input type="submit" value="Додати">
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,244 @@
+{
+	"info": {
+		"_postman_id": "db926536-83fe-4b9b-a97e-fffbd6983c26",
+		"name": "Inventory API",
+		"description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "50038977",
+		"_collection_link": "https://wukasei-1986154.postman.co/workspace/wukasei's-Workspace~f32d05ae-95b8-4109-8518-ff3ba3fcf447/collection/50038977-db926536-83fe-4b9b-a97e-fffbd6983c26?action=share&source=collection_link&creator=50038977"
+	},
+	"item": [
+		{
+			"name": "search",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "id",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "has_photo",
+							"value": "true",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"search"
+					]
+				},
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "add item",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "inventory_name",
+							"value": "Трава",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Проста трава. Може стати основою для посадки.",
+							"type": "text"
+						},
+						{
+							"key": "photo",
+							"type": "file",
+							"src": [
+								"",
+								"/C:/Users/Inna/Documents/workout2/backend/lab6/images/grass.png"
+							]
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get inventory",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/inventory",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"inventory"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get item",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/inventory/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"inventory",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get photo of item",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/inventory/3/photo",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"inventory",
+						"3",
+						"photo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update inf",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Зачарована кирка\",\r\n  \"description\": \"Зачарована кирка, що швидше ламає блоки та інколи дає додаткові ресурси\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/inventory/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"inventory",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update photo",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "/C:/Users/Inna/Documents/workout2/backend/lab6/images/enchanted_pick.png"
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/inventory/2/photo",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"inventory",
+						"2",
+						"photo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dlete item",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Зачарована кирка\",\r\n  \"description\": \"Зачарована кирка, що швидше ламає блоки та інколи дає додаткові ресурси\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/inventory/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"inventory",
+						"5"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
