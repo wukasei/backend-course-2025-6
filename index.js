@@ -6,7 +6,10 @@ const fs = require("fs").promises;
 const files = require("fs");
 const path = require("path");
 const formidable = require("formidable");
-
+const express = require("express");
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+const cors = require('cors');
 
 const program = new Command;
 
@@ -18,6 +21,31 @@ program
 program.parse(process.argv);
 
 const options = program.opts();
+
+// --- Express для Swagger ---
+const app = express();
+app.use(cors());
+
+// --- Swagger ---
+// const swaggerDefinition = {
+//   openapi: '3.0.0',
+//   info: { title: 'Inventory API', version: '1.0.0', description: 'API для управління інвентарем' },
+//   servers: [{ url: `http://localhost:${options.port}` }],
+// };
+
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: { title: 'Inventory API', version: '1.0.0', description: 'API для управління інвентарем' },
+  servers: [{ url: `http://127.0.0.1:${options.port}` }], // Docker-friendly
+};
+
+const swaggerSpec = swaggerJsdoc({
+  swaggerDefinition,
+  apis: ['./index.js'], // тут можна додати інші файли з роутами
+});
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 if(!files.existsSync(options.cache)){
     files.mkdirSync(options.cache, {recursive:true});
@@ -34,7 +62,23 @@ async function getInventoryItem(req) {
 }
 
 async function allGets(req, res) {
-    // Головна сторінка
+    /**
+     * @swagger
+     * /:
+     *   get:
+     *     summary: Головна сторінка сервера
+     *     description: Повертає HTML файл index.html
+     *     responses:
+     *       200:
+     *         description: HTML сторінка успішно отримана
+     *         content:
+     *           text/html:
+     *             schema:
+     *               type: string
+     *       404:
+     *         description: Файл не знайдено
+     */
+
     if (req.url === "/" || req.url === "/index.html") {
         try {
             const html = await fs.readFile("index.html");
@@ -46,6 +90,38 @@ async function allGets(req, res) {
         }
         return;
     }
+    /**
+     * @swagger
+     * /RegisterForm.html:
+     *   get:
+     *     summary: Сторінка форми реєстрації предмету
+     *     responses:
+     *       200:
+     *         description: HTML форма успішно отримана
+     *         content:
+     *           text/html:
+     *             schema:
+     *               type: string
+     *       404:
+     *         description: Файл не знайдено
+     */
+
+    /**
+     * @swagger
+     * /SearchForm.html:
+     *   get:
+     *     summary: Сторінка форми пошуку предмету
+     *     responses:
+     *       200:
+     *         description: HTML форма успішно отримана
+     *         content:
+     *           text/html:
+     *             schema:
+     *               type: string
+     *       404:
+     *         description: Файл не знайдено
+     */
+
 
     if (req.url === "/RegisterForm.html" || req.url === "/SearchForm.html") {
         try {
@@ -58,6 +134,29 @@ async function allGets(req, res) {
         }
         return;
     }
+    /**
+     * @swagger
+     * /inventory:
+     *   get:
+     *     summary: Повертає список всіх предметів інвентарю
+     *     responses:
+     *       200:
+     *         description: Список предметів успішно отримано
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 type: object
+     *                 properties:
+     *                   id:
+     *                     type: integer
+     *                   name:
+     *                     type: string
+     *                   description:
+     *                     type: string
+     */
+
 
     if (req.url.startsWith("/inventory")) {
         try {
@@ -68,6 +167,30 @@ async function allGets(req, res) {
                 res.end(JSON.stringify(inventory));
                 return;
             }
+            /**
+             * @swagger
+             * /inventory/{id}/photo:
+             *   get:
+             *     summary: Повертає фото предмету за ID
+             *     parameters:
+             *       - in: path
+             *         name: id
+             *         required: true
+             *         schema:
+             *           type: integer
+             *         description: ID предмету
+             *     responses:
+             *       200:
+             *         description: Фото успішно отримано
+             *         content:
+             *           image/jpeg:
+             *             schema:
+             *               type: string
+             *               format: binary
+             *       404:
+             *         description: Фото не знайдено
+             */
+
 
             if (req.url.startsWith("/inventory/") && req.url.endsWith("/photo")) {
                 if (parts.length !== 3 || !item || !item.photoPath) {
@@ -88,6 +211,39 @@ async function allGets(req, res) {
                 stream.pipe(res);
                 return;
             }
+            /**
+             * @swagger
+             * /inventory/{id}:
+             *   get:
+             *     summary: Повертає предмет за ID
+             *     parameters:
+             *       - in: path
+             *         name: id
+             *         required: true
+             *         schema:
+             *           type: integer
+             *         description: ID предмету
+             *     responses:
+             *       200:
+             *         description: Предмет знайдено
+             *         content:
+             *           application/json:
+             *             schema:
+             *               type: object
+             *               properties:
+             *                 id:
+             *                   type: integer
+             *                 name:
+             *                   type: string
+             *                 description:
+             *                   type: string
+             *                 photo:
+             *                   type: string
+             *                   description: Посилання на фото предмету (якщо є)
+             *       404:
+             *         description: Предмет не знайдено
+             */
+
 
             if (req.url.startsWith("/inventory/")) {
                 if (!item) {
@@ -131,6 +287,29 @@ async function allPut(req, res) {
     let body = [];
 
     try {
+        /**
+         * @swagger
+         * /inventory/{id}/photo:
+         *   put:
+         *     summary: Оновлює фото предмету
+         *     parameters:
+         *       - in: path
+         *         name: id
+         *         required: true
+         *         schema:
+         *           type: integer
+         *     requestBody:
+         *       content:
+         *         image/jpeg:
+         *           schema:
+         *             type: string
+         *             format: binary
+         *     responses:
+         *       201:
+         *         description: Фото оновлено успішно
+         *       404:
+         *         description: Предмет або фото не знайдено
+         */
         if (req.url.startsWith("/inventory/") && req.url.endsWith("/photo")) {
             if (parts.length !== 3 || !item) {
                 res.writeHead(404, { "Content-Type": "text/plain" });
@@ -156,6 +335,35 @@ async function allPut(req, res) {
             });
 
         }
+        /**
+         * @swagger
+         * /inventory/{id}:
+         *   put:
+         *     summary: Оновлює дані предмету
+         *     parameters:
+         *       - in: path
+         *         name: id
+         *         required: true
+         *         schema:
+         *           type: integer
+         *     requestBody:
+         *       content:
+         *         application/json:
+         *           schema:
+         *             type: object
+         *             properties:
+         *               name:
+         *                 type: string
+         *               description:
+         *                 type: string
+         *     responses:
+         *       200:
+         *         description: Предмет оновлено успішно
+         *       400:
+         *         description: Неправильні дані
+         *       404:
+         *         description: Предмет не знайдено
+         */
         else if (req.url.startsWith("/inventory/")) {
             if (parts.length !== 2 || !item) {
                 res.writeHead(404, { "Content-Type": "text/plain" });
@@ -199,6 +407,45 @@ async function allPut(req, res) {
 }
 
 async function allPost(req, res) {
+    /**
+     * @swagger
+     * /register:
+     *   post:
+     *     summary: Додає новий предмет
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         multipart/form-data:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               inventory_name:
+     *                 type: string
+     *               description:
+     *                 type: string
+     *               photo:
+     *                 type: string
+     *                 format: binary
+     *     responses:
+     *       201:
+     *         description: Предмет додано успішно
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 id:
+     *                   type: integer
+     *                 name:
+     *                   type: string
+     *                 description:
+     *                   type: string
+     *                 photo:
+     *                   type: string
+     *       400:
+     *         description: Неправильні дані
+     */
+
     if (req.url.startsWith("/register")) {
         let inventory = [];
         try {
@@ -211,13 +458,15 @@ async function allPost(req, res) {
         const form = new formidable.IncomingForm({
             multiples: false,
             uploadDir: options.cache,
-            keepExtensions: true
+            keepExtensions: true,
+            allowEmptyFiles: true, 
+            minFileSize: 0,  
         });
 
-        // ВСЯ обробка відповіді — всередині form.parse
         form.parse(req, async (err, fields, fileFields) => {
             if (err) {
                 res.writeHead(400, { "Content-Type": "text/plain" });
+                console.log(err);
                 return res.end("Invalid form data");
             }
 
@@ -278,10 +527,44 @@ async function allPost(req, res) {
                 }
             }
         });
-
-        // НЕ ставити ніяких res.end() після form.parse
         return; 
     }
+    /**
+     * @swagger
+     * /search:
+     *   post:
+     *     summary: Пошук предмету за ID
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/x-www-form-urlencoded:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               id:
+     *                 type: integer
+     *               has_photo:
+     *                 type: boolean
+     *     responses:
+     *       200:
+     *         description: Предмет знайдено
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 id:
+     *                   type: integer
+     *                 name:
+     *                   type: string
+     *                 description:
+     *                   type: string
+     *                 photo:
+     *                   type: string
+     *       404:
+     *         description: Предмет не знайдено
+     */
+
 
     if (req.url === "/search") {
         let body = [];
@@ -313,7 +596,6 @@ async function allPost(req, res) {
                 description: Array.isArray(foundItem.description) ? foundItem.description[0] : foundItem.description
             };
 
-            // перевіряємо, чи файл реально існує
             if (hasPhoto && foundItem.photoPath && files.existsSync(foundItem.photoPath)) {
                 response.photo = `/inventory/${id}/photo`;
             }
@@ -331,6 +613,24 @@ async function allPost(req, res) {
 
 
 async function deletee(req,res) {
+    /**
+     * @swagger
+     * /inventory/{id}:
+     *   delete:
+     *     summary: Видаляє предмет за ID
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: integer
+     *     responses:
+     *       200:
+     *         description: Предмет видалено успішно
+     *       404:
+     *         description: Предмет не знайдено
+     */
+
     const { inventory, parts, id, item } = await getInventoryItem(req); 
     if(!item){
         res.writeHead(404, {'Content-type':'text/plain'});
@@ -344,8 +644,20 @@ async function deletee(req,res) {
     res.end("item deleted");
 }
 
+// app.all('/:path(*)', async (req, res) => {
+//   await inventoryAll(req, res);
+// });
+
+
 async function inventoryAll(req, res) {
     try {
+
+        if (req.method === 'OPTIONS') {
+            res.writeHead(204); 
+            res.end();
+            return;
+        }
+
         const method = req.method;
         if (method === "GET") {
             await allGets(req, res);
@@ -366,10 +678,16 @@ async function inventoryAll(req, res) {
     }
 }
 
-const server = http.createServer((req, res)=>{
-    inventoryAll(req, res);
+app.use(async (req, res, next) => {
+    try {
+        await inventoryAll(req, res);
+    } catch (err) {
+        next(err);
+    }
 });
 
-server.listen(Number(options.port), options.host, ()=>{
-    console.log(`Server running at http://${options.host}:${options.port}/`);
-})
+// --- Запуск сервера ---
+app.listen(Number(options.port), options.host || "0.0.0.0", () => {
+  console.log(`Server running at http://${options.host}:${options.port}/`);
+  console.log(`Swagger docs at http://${options.host}:${options.port}/docs`);
+});
