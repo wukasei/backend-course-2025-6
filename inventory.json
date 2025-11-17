@@ -3,7 +3,7 @@
     "id": 1,
     "name": "Дерев’яний меч",
     "description": "Простий меч з дерева. Підійде для перших боїв із мобами",
-    "photoPath": "cache\\1.png"
+    "photoPath": "cache/1.png"
   },
   {
     "id": 2,
@@ -15,30 +15,36 @@
     "id": 3,
     "name": "Золоте яблуко",
     "description": "Смачне яблуко з золотим блиском. Відновлює здоров’я",
-    "photoPath": "cache\\3.png"
+    "photoPath": "cache/3.png"
   },
   {
     "id": 4,
     "name": "Блок обсидіану",
     "description": "Міцний блок для будівництва та порталів у Нижній світ",
-    "photoPath": "cache\\4.jpg"
+    "photoPath": "cache/4.jpg"
   },
   {
     "id": 5,
     "name": "Факел",
     "description": "Джерело світла, що відганяє мобів і освітлює темні місця",
-    "photoPath": "cache\\5.jpg"
+    "photoPath": "cache/5.jpg"
   },
   {
     "id": 6,
     "name": "ТНТ блок",
     "description": "Вибуховий блок, який активується вогнем або редстоуном",
-    "photoPath": "cache\\6.png"
+    "photoPath": "cache/6.png"
   },
   {
     "id": 7,
     "name": "Лук",
     "description": "Зброя дальнього бою, що дозволяє атакувати мобів із безпечної відстані",
-    "photoPath": "cache\\7.png"
+    "photoPath": "cache/7.png"
+  },
+  {
+    "id": 8,
+    "name": "Печиво",
+    "description": "Їстівний предмет, відновлює невелику кількість здоров’я",
+    "photoPath": "cache/8.jpg"
   }
 ]

@@ -125,7 +125,7 @@ async function allGets(req, res) {
 
     if (req.url === "/RegisterForm.html" || req.url === "/SearchForm.html") {
         try {
-            const html = await fs.readFile(req.url.substring(1)); // видаляємо "/"
+            const html = await fs.readFile(req.url.substring(1)); 
             res.writeHead(200, { "Content-Type": "text/html" });
             res.end(html);
         } catch {
@@ -199,7 +199,7 @@ async function allGets(req, res) {
                     return;
                 }
 
-                const photoPath = path.resolve(item.photoPath);
+                const photoPath = path.resolve(item.photoPath.replace(/\\/g, '/'));
                 if (!files.existsSync(photoPath)) {
                     res.writeHead(404, { "Content-Type": "text/plain" });
                     res.end("file not found");
@@ -491,7 +491,7 @@ async function allPost(req, res) {
                         const newFilePath = path.join(options.cache, `${newId}${ext}`);
                         try {
                             await fs.rename(file.filepath, newFilePath);
-                            photoPath = newFilePath;
+                            photoPath = newFilePath.replace(/\\/g, '/');
                         } catch (err) {
                             console.error("Error saving photo:", err);
                             photoPath = "";
@@ -580,10 +580,10 @@ async function allPost(req, res) {
         req.on("end", async () => {
             const buffer = Buffer.concat(body);
             const formData = new URLSearchParams(buffer.toString());
-            const id = formData.get("id");               
+            const id = Number(formData.get("id"));              
             const hasPhoto = formData.get("has_photo") === "true"; 
             
-            const foundItem = inventory.find(obj => obj.id == id);
+            const foundItem = inventory.find(obj => obj.id === id);
             if (!foundItem) {
                 res.writeHead(404, { "Content-Type": "text/plain" });
                 res.end("item not found");
@@ -596,7 +596,8 @@ async function allPost(req, res) {
                 description: Array.isArray(foundItem.description) ? foundItem.description[0] : foundItem.description
             };
 
-            if (hasPhoto && foundItem.photoPath && files.existsSync(foundItem.photoPath)) {
+            const photoPath = foundItem.photoPath ? path.resolve(foundItem.photoPath.replace(/\\/g, '/')) : null;
+            if (hasPhoto && photoPath && files.existsSync(photoPath)) {
                 response.photo = `/inventory/${id}/photo`;
             }
 
