@@ -41,7 +41,7 @@ const swaggerDefinition = {
 
 const swaggerSpec = swaggerJsdoc({
   swaggerDefinition,
-  apis: ['./index.js'], // тут можна додати інші файли з роутами
+  apis: ['./index.js'], 
 });
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -644,11 +644,6 @@ async function deletee(req,res) {
     res.writeHead(200, {'Content-Type':'application/json'});
     res.end("item deleted");
 }
-
-// app.all('/:path(*)', async (req, res) => {
-//   await inventoryAll(req, res);
-// });
-
 
 async function inventoryAll(req, res) {
     try {
